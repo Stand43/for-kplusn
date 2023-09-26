@@ -1,0 +1,190 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+	<!--//comment//-->
+    <meta charset="UTF-8"> 
+    <title>Checkout</title>
+    
+    <script>
+        function removeRow(elem)
+        {
+            if (document.getElementsByName("itemName").length>1)
+            {
+                elem.remove();
+                updateTotal();
+            }
+            
+        }
+
+        function updateRow(elem)
+        {
+            parentRow = elem.parentNode.parentNode;
+            elems = parentRow.children;
+
+            for (e=0;e<elems.length;e++)
+            {
+                if(elems[e].childNodes[0].name == "itemQuantity")
+                    {quantity = parseFloat(elems[e].childNodes[0].value);}
+                if(elems[e].childNodes[0].name == "itemPrice")
+                    {price = parseFloat(elems[e].childNodes[0].value);}
+                if(elems[e].childNodes[0].name == "itemDiscount")
+                    {discount = parseFloat(elems[e].childNodes[0].value);}
+                if(elems[e].childNodes[0].name == "itemTax")
+                    {tax = parseFloat(elems[e].childNodes[0].value);}
+                
+            }
+            for (e=0;e<elems.length;e++)
+            {
+                if(elems[e].childNodes[0].name == "itemTotal")
+                {
+                    total=quantity*price*((100-discount)/100)*((100+tax)/100);
+                    elems[e].childNodes[0].value = total;
+                }
+            }
+        }
+        function updateTotal()
+        {
+            elems = document.getElementsByName('itemTotal');
+            sum = 0;
+            for (e=0;e<elems.length;e++)
+            {
+                sum += parseFloat(elems[e].value)
+            }
+            allTotal = document.getElementById('allTotal');
+            allTotal.innerHTML = sum;
+        }
+
+        function checkNegativeAndNothing()
+        {
+            elems = document.getElementsByTagName('input')
+            for (e=0;e<elems.length;e++)
+            {
+                if(parseFloat(elems[e].value)<0 || elems[e].value==''){
+                    elems[e].value = 0;}
+            }
+        }
+
+        function updateTable(elem)
+        {
+            checkNegativeAndNothing()
+            updateRow(elem);
+            updateTotal()
+        }
+
+        function addRow(pasteToRow)
+        {   
+            rowCount = document.getElementsByName("removeButton").length;
+
+            //myTable = document.getElementsByTagName("table")[0];
+            newRow = document.createElement("tr");
+            
+
+
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemNumber");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","text");newInput.setAttribute("name","itemName");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+
+            //changeable
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemQuantity");
+            newInput.setAttribute("value","0");newInput.setAttribute("onchange","updateTable(this)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+            //changeable
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemPrice");
+            newInput.setAttribute("value","0");newInput.setAttribute("onchange","updateTable(this)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+            //changeable
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemDiscount");
+            newInput.setAttribute("value","0");newInput.setAttribute("onchange","updateTable(this)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+            //changeable
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemTax");
+            newInput.setAttribute("value","0");newInput.setAttribute("onchange","updateTable(this)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","number");newInput.setAttribute("name","itemTotal");
+            newInput.setAttribute("value","0");newInput.setAttribute("readonly","readonly");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","button");newInput.setAttribute("name","addButton");
+            newInput.setAttribute("value","+");newInput.setAttribute("onclick","addRow(this.parentNode.parentNode)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+            
+            newCol = document.createElement("td");
+            newInput = document.createElement("input");
+            newInput.setAttribute("type","button");newInput.setAttribute("name","removeButton");
+            newInput.setAttribute("value","-");newInput.setAttribute("onclick","removeRow(this.parentNode.parentNode)");
+            newCol.appendChild(newInput);
+            newRow.appendChild(newCol);
+              
+            
+            
+            
+
+            pasteToRow.after(newRow);
+
+
+        }
+    </script>
+</head> 
+
+<body>
+<form name="arve">
+    <table>
+        <!-- <tr>
+            <th>Add Row
+                <input type="button" value="+" onclick="addRow()">
+            </th>
+            
+        </tr> -->
+        <tr>
+            <th>No</th><th>Name</th><th>Quantity</th><th>Price</th><th>Discount</th><th>Tax</th><th>Total</th>
+
+        </tr>
+        <tr>
+            <td><input type="number" name="itemNumber"></td>
+            <td><input type="text" name="itemName"></td>
+            <td><input type="number" name="itemQuantity" value="0" onchange="updateTable(this)"></td>
+            <td><input type="number" name="itemPrice" value="0"onchange="updateTable(this)" ></td>
+            <td><input type="number" name="itemDiscount" value="0"onchange="updateTable(this)"></td>
+            <td><input type="number" name="itemTax" value="0"onchange="updateTable(this)"></td>
+            <td><input type="number" name="itemTotal" value="0"onchange=""readonly="readonly"></td>
+            <td><input type="button" name="addButton" value="+" onclick="addRow(this.parentNode.parentNode)"></td>
+            <td><input type="button" name="removeButton" value="-" onclick="removeRow(this.parentNode.parentNode)"></td>
+            
+        </tr>
+        <tr>
+            <td align="right" colspan="6">Total:</td>
+            <td id="allTotal"></td>
+        </tr>
+    </table>
+</form>
+ 
+</body>
+ 
+</html> 
